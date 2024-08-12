@@ -1,41 +1,50 @@
 const { prompt } = require("inquirer");
-// const logo = require("asciiart-logo");
 const figlet = require("figlet");
 const db = require("./db");
 
+// Initialize the application
+init();
 
+function init() {
+    // Print the welcome screen
+    printWelcomeScreen();
+  
+    // Load the main prompts
+    loadMainPrompts();
+}
 
+// Function to print the welcome screen with ASCII art
 function printWelcomeScreen() {
     console.log("###############################");
     console.log(
-      figlet.textSync("School Booard of Grey Brue Employee Tracker ========>", {
-        font: 'Banner3-D',
+      figlet.textSync("School Board of Grey Brue Employee Tracker ========>", {
+        font: 'Star Wars',
         horizontalLayout: "full",
         verticalLayout: "default",
-        width: 80,
+        width: 100,
         whitespaceBreak: true,
       })
     );
     console.log("###############################");
-  }
-  
-  /**
-   *  function printEndingScreen()
-   *  Function to print the ending ascii art by node module figlet
-   */
-  function printEndingScreen() {
+}
+
+// Function to print the ending screen with ASCII art
+function printEndingScreen() {
     console.log("###############################");
     console.log(
-      figlet.textSync("School Booard of Grey Brue Employee Tracker ========>", {
-        font: 'Banner3-D',
+      figlet.textSync("School Board of Grey Brue Employee Tracker <========", {
+        font: 'Star Wars',
         horizontalLayout: "full",
         verticalLayout: "default",
-        width: 80,
+        width: 100,
         whitespaceBreak: true,
       })
     );
     console.log("###############################");
-  }
+}
 
-
-init();
+// Placeholder function for loading main prompts
+function loadMainPrompts() {
+    // Implement the function to load prompts here
+    console.log("Loading main prompts...");
+}
