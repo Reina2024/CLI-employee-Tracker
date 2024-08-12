@@ -1,6 +1,7 @@
-const { prompt } = require("inquirer"); // Fixed: Use 'prompt' from 'inquirer'
+const { prompt } = require("inquirer"); 
 const figlet = require("figlet");
-const db = require("./db");
+const db = require("./db"); 
+const validator = require("validator");
 
 // Initialize the application
 init();
@@ -17,7 +18,7 @@ function init() {
 function printWelcomeScreen() {
     console.log("###############################");
     console.log(
-      figlet.textSync("School Board of Grey Brue Employee Tracker ========>", {
+      figlet.textSync("School Board of Grey Brue Employee Tracker =============>", {
         font: 'Star Wars', 
         horizontalLayout: "full",
         verticalLayout: "default",
@@ -32,7 +33,7 @@ function printWelcomeScreen() {
 function printEndingScreen() {
     console.log("###############################");
     console.log(
-      figlet.textSync("School Board of Grey Brue Employee Tracker <========", {
+      figlet.textSync("School Board of Grey Brue Employee Tracker <==============", {
         font: 'Star Wars', 
         horizontalLayout: "full",
         verticalLayout: "default",
@@ -43,7 +44,6 @@ function printEndingScreen() {
     console.log("###############################");
 }
 
-// Placeholder function for loading main prompts
 async function loadMainPrompts() {
     const menu = [
         "Departments",
@@ -56,6 +56,8 @@ async function loadMainPrompts() {
         "View employees by manager",
         "View employees by department",
         "See Departmental Budget",
+        "REMOVE_ROLE", // Added option for removal
+        "Quit" // Added quit option
     ];
 
     while (true) {
@@ -83,15 +85,15 @@ async function loadMainPrompts() {
                 await db.addDept(newDept);
                 break;
             case "New role":
-                const newRole = await collectNewRole(db);
+                const newRole = await collectNewRole();
                 await db.addRole(newRole);
                 break;
             case "New employee":
-                const newEmployee = await collectNewEmployee(db);
+                const newEmployee = await collectNewEmployee();
                 await db.addEmployee(newEmployee);
                 break;
             case "Update an employee's role":
-                const chosenOne = await pickEmployeeRole(db);
+                const chosenOne = await pickEmployeeRole();
                 await db.updateEmployeeRole(chosenOne);
                 break;
             case "View employees by manager":
@@ -103,76 +105,84 @@ async function loadMainPrompts() {
             case "See Departmental Budget":
                 await db.showUtilizedBudgetByDept();
                 break;
+            case "REMOVE_ROLE":
+                await removeRole(); // Ensure this function is defined
+                break;
+            case "Quit":
+                printEndingScreen();
+                process.exit(); // Exit the application
             default:
-                // Handle unknown options or exit
                 console.log("Invalid option selected.");
                 break;
         }
-
     }
 }
 
-async function collectNewRole(db) {
-    const departments = await db.getDept();
-  
-    const newRole = await inquire.prompt([
+// Function to collect details for a new department
+async function collectNewDept() {
+    const newDept = await prompt([
       {
         type: 'input',
-        message: "Please type the name of the new role\n",
-        name: "title",
-        validate: checkInputText
-      },
-      {
-        type: 'input',
-        message: "Add the salary of the new role\n",
-        name: "salary",
-        validate: checkInputNumber
-      },
-      {
-        type: 'list',
-        message: "Which department will this new role be in?\n",
-        name: "department",
-        choices: departments
+        message: "Enter the name of the new department\n",
+        name: "name",
+        validate: checkInputText 
       }
     ]);
-    // console.log(newRole);
-    return newRole;
-  }
-  
-  /**
-   *  @param {object} db The database instance used by this proejct
-   *  @returns {object} contains employee info collected from the user { firstName, lastName, role, manager }
-   */
-  async function collectNewEmployee(db) {
+    return newDept;
+}
+
+// Function to remove a role
+async function removeRole() {
     const roles = await db.getRole();
-    const managers = await db.getEmployee();
   
-    const newEmployee = await inquire.prompt([
-      {
-        type: 'input',
-        message: "Enter the first name of the new employee?\n",
-        name: "firstName",
-        validate: checkInputName
-      },
-      {
-        type: 'input',
-        message: "Enter the last name of the new employee?\n",
-        name: "lastName",
-        validate: checkInputName
-      },
+    const roleToRemove = await prompt([
       {
         type: 'list',
-        message: "What is the role of the new employee?\n",
+        message: "Enter the role would you like to remove?\n",
         name: "role",
         choices: roles
-      },
-      {
-        type: 'list',
-        message: "Who manages the new employee?\n",
-        name: "manager",
-        choices: managers
       }
     ]);
-    return newEmployee;
+    
+    // Implement removal logic here
+    console.log(`Removing role: ${roleToRemove.role}`);
+    // Example query: await db.removeRole(roleToRemove.role);
+}
+
+// Validation
+function checkInputNumber(str) {
+    if (!validator.isEmpty(str.trim()) && validator.isNumeric(str.trim())) {
+      return true;
+    }
+    return "Please Enter a Number";
+  }
+  
+  
+  function checkInputText(str) {
+    if (!validator.isEmpty(str.trim()) && str.trim().length < 25) {
+      return true;
+    }
+    return "Please enter upto 25 Characters";
+  }
+  
+  
+  function checkInputName(str) {
+    if (!validator.contains(str.trim(), [" "])) {
+      return true;
+    }
+    return "Please enter a name";
+  }
+  
+  
+  async function collectNewDept() {
+    const newDept = await inquire.prompt([
+      {
+        type: 'input',
+        message: "PLease enter the name of the new department?\n",
+        name: "name",
+        validate: checkInputText
+      }
+    ]);
+    return newDept.name;
   }
   
