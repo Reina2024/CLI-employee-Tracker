@@ -3,6 +3,7 @@ const figlet = require("figlet");
 const db = require("./db"); 
 const validator = require("validator");
 
+
 // Initialize the application
 init();
 
@@ -185,4 +186,6 @@ function checkInputNumber(str) {
     ]);
     return newDept.name;
   }
+  
+  
   

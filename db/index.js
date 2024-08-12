@@ -13,7 +13,7 @@ class DB {
     } finally {
       client.release();
     }
-}
+  }
 }
 
 const db = {
@@ -100,7 +100,7 @@ const db = {
     }
   },
 
-  async getRole() {
+  async pickEmployeeRole() {
     try {
       const result = await pool.query('SELECT title FROM role');
       return result.rows.map(row => row.title);
@@ -116,7 +116,7 @@ const db = {
     } catch (error) {
       console.error('Error fetching employees for manager selection:', error);
     }
-  },
+  }
 };
 
 module.exports = db;
