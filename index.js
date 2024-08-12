@@ -112,4 +112,67 @@ async function loadMainPrompts() {
     }
 }
 
-
+async function collectNewRole(db) {
+    const departments = await db.getDept();
+  
+    const newRole = await inquire.prompt([
+      {
+        type: 'input',
+        message: "Please type the name of the new role\n",
+        name: "title",
+        validate: checkInputText
+      },
+      {
+        type: 'input',
+        message: "Add the salary of the new role\n",
+        name: "salary",
+        validate: checkInputNumber
+      },
+      {
+        type: 'list',
+        message: "Which department will this new role be in?\n",
+        name: "department",
+        choices: departments
+      }
+    ]);
+    // console.log(newRole);
+    return newRole;
+  }
+  
+  /**
+   *  @param {object} db The database instance used by this proejct
+   *  @returns {object} contains employee info collected from the user { firstName, lastName, role, manager }
+   */
+  async function collectNewEmployee(db) {
+    const roles = await db.getRole();
+    const managers = await db.getEmployee();
+  
+    const newEmployee = await inquire.prompt([
+      {
+        type: 'input',
+        message: "Enter the first name of the new employee?\n",
+        name: "firstName",
+        validate: checkInputName
+      },
+      {
+        type: 'input',
+        message: "Enter the last name of the new employee?\n",
+        name: "lastName",
+        validate: checkInputName
+      },
+      {
+        type: 'list',
+        message: "What is the role of the new employee?\n",
+        name: "role",
+        choices: roles
+      },
+      {
+        type: 'list',
+        message: "Who manages the new employee?\n",
+        name: "manager",
+        choices: managers
+      }
+    ]);
+    return newEmployee;
+  }
+  
