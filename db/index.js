@@ -1,4 +1,6 @@
 const pool = require('./connection');
+const inquire = require("inquirer");
+const validator = require("validator");
 
 class DB {
   constructor() {}
@@ -13,3 +15,4 @@ class DB {
     }
 }
 }
+

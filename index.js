@@ -1,4 +1,4 @@
-const { prompt } = require("inquirer");
+const { prompt } = require("inquirer"); // Fixed: Use 'prompt' from 'inquirer'
 const figlet = require("figlet");
 const db = require("./db");
 
@@ -18,7 +18,7 @@ function printWelcomeScreen() {
     console.log("###############################");
     console.log(
       figlet.textSync("School Board of Grey Brue Employee Tracker ========>", {
-        font: 'Star Wars',
+        font: 'Star Wars', 
         horizontalLayout: "full",
         verticalLayout: "default",
         width: 100,
@@ -33,7 +33,7 @@ function printEndingScreen() {
     console.log("###############################");
     console.log(
       figlet.textSync("School Board of Grey Brue Employee Tracker <========", {
-        font: 'Star Wars',
+        font: 'Star Wars', 
         horizontalLayout: "full",
         verticalLayout: "default",
         width: 100,
@@ -44,7 +44,72 @@ function printEndingScreen() {
 }
 
 // Placeholder function for loading main prompts
-function loadMainPrompts() {
-    // Implement the function to load prompts here
-    console.log("Loading main prompts...");
+async function loadMainPrompts() {
+    const menu = [
+        "Departments",
+        "Roles",
+        "List all employees",
+        "New department",
+        "New role",
+        "New employee",
+        "Update an employee's role",
+        "View employees by manager",
+        "View employees by department",
+        "See Departmental Budget",
+    ];
+
+    while (true) {
+        const { info } = await prompt([
+            {
+                type: 'list',
+                message: "What Information would you like to see?\n",
+                name: "info",
+                choices: menu,
+            },
+        ]);
+
+        switch (info) {
+            case "Departments":
+                await db.showAllDepartments();
+                break;
+            case "Roles":
+                await db.showAllRoles();
+                break;
+            case "List all employees":
+                await db.showAllEmployees();
+                break;
+            case "New department":
+                const newDept = await collectNewDept();
+                await db.addDept(newDept);
+                break;
+            case "New role":
+                const newRole = await collectNewRole(db);
+                await db.addRole(newRole);
+                break;
+            case "New employee":
+                const newEmployee = await collectNewEmployee(db);
+                await db.addEmployee(newEmployee);
+                break;
+            case "Update an employee's role":
+                const chosenOne = await pickEmployeeRole(db);
+                await db.updateEmployeeRole(chosenOne);
+                break;
+            case "View employees by manager":
+                await db.showEmployeeByManager();
+                break;
+            case "View employees by department":
+                await db.showEmployeeByDept();
+                break;
+            case "See Departmental Budget":
+                await db.showUtilizedBudgetByDept();
+                break;
+            default:
+                // Handle unknown options or exit
+                console.log("Invalid option selected.");
+                break;
+        }
+
+    }
 }
+
+
