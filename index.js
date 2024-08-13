@@ -132,23 +132,40 @@ async function collectNewDept() {
     return newDept;
 }
 
-// Function to remove a role
 async function removeRole() {
-    const roles = await db.getRole();
+  const roles = await db.showAllRoles(); // Retrieve all roles
   
-    const roleToRemove = await prompt([
+  const roleToRemove = await prompt([
       {
-        type: 'list',
-        message: "Enter the role would you like to remove?\n",
-        name: "role",
-        choices: roles
+          type: 'list',
+          message: "Which role would you like to remove?\n",
+          name: "role",
+          choices: roles.map(role => ({ name: role.title, value: role.id })) // Pass role ID as the value
       }
-    ]);
-    
-    // Implement removal logic here
-    console.log(`Removing role: ${roleToRemove.role}`);
-    // Example query: await db.removeRole(roleToRemove.role);
+  ]);
+
+  // Confirm removal
+  const confirmation = await prompt([
+      {
+          type: 'confirm',
+          message: `Are you sure you want to remove the role "${roleToRemove.role}"?`,
+          name: 'confirm',
+      }
+  ]);
+
+  // If confirmed, remove the role
+  if (confirmation.confirm) {
+      try {
+          await db.removeRole(roleToRemove.role); // Call the removeRole method with the role ID
+          console.log(`Successfully removed the role.`);
+      } catch (err) {
+          console.error(`Error removing the role: ${err.message}`);
+      }
+  } else {
+      console.log("Role removal cancelled.");
+  }
 }
+
 
 // Validation
 function checkInputNumber(str) {
@@ -173,19 +190,5 @@ function checkInputNumber(str) {
     }
     return "Please enter a name";
   }
-  
-  
-  async function collectNewDept() {
-    const newDept = await inquire.prompt([
-      {
-        type: 'input',
-        message: "PLease enter the name of the new department?\n",
-        name: "name",
-        validate: checkInputText
-      }
-    ]);
-    return newDept.name;
-  }
-  
   
   

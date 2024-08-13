@@ -116,7 +116,17 @@ const db = {
     } catch (error) {
       console.error('Error fetching employees for manager selection:', error);
     }
+  },
+  async removeRole(roleId) {
+    const query = `DELETE FROM role WHERE id = $1`; // SQL syntax uses $1 for parameterized queries in PostgreSQL
+    try {
+      await pool.query(query, [roleId]); // Adjusted to use pool.query for consistency
+      console.log(`Role with ID ${roleId} has been removed.`);
+    } catch (error) {
+      console.error('Error deleting role:', error.message);
+      throw error; // Re-throw the error to be caught by the calling function
+    }
   }
-};
+  };
 
 module.exports = db;
