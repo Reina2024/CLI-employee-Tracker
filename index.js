@@ -19,7 +19,7 @@ function init() {
 function printWelcomeScreen() {
     console.log("###############################");
     console.log(
-      figlet.textSync("School Board of Grey Brue Employee Tracker =============>", {
+      figlet.textSync("School Board of Grey Brue Employee Tracker ", {
         font: 'Star Wars', 
         horizontalLayout: "full",
         verticalLayout: "default",
@@ -34,7 +34,7 @@ function printWelcomeScreen() {
 function printEndingScreen() {
     console.log("###############################");
     console.log(
-      figlet.textSync("School Board of Grey Brue Employee Tracker <==============", {
+      figlet.textSync("School Board of Grey Brue Employee Tracker", {
         font: 'Star Wars', 
         horizontalLayout: "full",
         verticalLayout: "default",

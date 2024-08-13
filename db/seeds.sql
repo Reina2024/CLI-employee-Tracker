@@ -35,8 +35,8 @@ VALUES
     ('Ray', 'Chambers', 3, 3),
     ('Steve', 'Jones', 4, 8),
     ('Chris', 'Smith', 4, 8),
-    ('Marry', 'Dunn', 5, NULL),
-    ('Jenny', 'Jones', 5, NULL),
-    ('Mark', 'Marky', 6, NULL),
-    ('Shandie', 'Rodgers', 7, NULL),
-    ('Candy', 'Willison', 7, NULL);
+    ('Marry', 'Dunn', 5, 5),
+    ('Jenny', 'Jones', 5, 5),
+    ('Mark', 'Marky', 6, 5),
+    ('Shandie', 'Rodgers', 7, 5),
+    ('Candy', 'Willison', 7, 5);

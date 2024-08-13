@@ -76,11 +76,14 @@ Finally go to the root folder. Start the Employee Tracker by `node index.js` in 
 Just follow the prompts in the command line. To quit select the "Quit" prompt.
 
 ## Video Link
+Below is a video of the terminal usage. 
 
+  [Watch this video walk through](
+ https://app.screencastify.com/v3/watch/d7JTOkMoamaIQj2xZCF5)
 
 ## Testing 
 
-Test in PG admon or the terminal
+Test in PG admin or the terminal
 
 ## Contributions 
 
@@ -108,4 +111,5 @@ Test in PG admon or the terminal
 
  - [Github Repository](https://github.com/Reina2024/CLI-employee-Tracker)
 
-- [Video Link] ()
+Video Link
+-https://app.screencastify.com/v3/watch/d7JTOkMoamaIQj2xZCF5
