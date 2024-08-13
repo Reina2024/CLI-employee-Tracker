@@ -1,6 +1,6 @@
 const pool = require('./connection');
-const inquire = require("inquirer");
-const validator = require("validator");
+const inquire = require('inquirer');
+const validator = require('validator');
 
 class DB {
   constructor() {}
@@ -20,7 +20,7 @@ const db = {
   async showAllDepartments() {
     try {
       const result = await pool.query('SELECT * FROM department');
-      console.log(result.rows);
+      console.table(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Error fetching departments:', error);
@@ -30,7 +30,7 @@ const db = {
   async showAllRoles() {
     try {
       const result = await pool.query('SELECT * FROM role');
-      console.log(result.rows);
+      console.table(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Error fetching roles:', error);
@@ -40,18 +40,28 @@ const db = {
   async showAllEmployees() {
     try {
       const result = await pool.query('SELECT * FROM employee');
-      console.log(result.rows);
+      console.table(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Error fetching employees:', error);
     }
   },
 
-  async addDept(department) {
+  async addDept(departmentName) {
     try {
-      await pool.query('INSERT INTO department (name) VALUES ($1)', [department.title]);
+      const existingDeptResult = await pool.query('SELECT id FROM department WHERE name = $1', [departmentName]);
+      if (existingDeptResult.rows.length > 0) {
+        console.log(`Department "${departmentName}" already exists.`);
+        return;
+      }
+      await pool.query('INSERT INTO department (name) VALUES ($1)', [departmentName]);
+      console.log(`Department "${departmentName}" added successfully.`);
     } catch (error) {
-      console.error('Error adding department:', error);
+      if (error.code === '23505') {
+        console.error(`Error adding department: Department "${departmentName}" already exists.`);
+      } else {
+        console.error('Error adding department:', error);
+      }
     }
   },
 
@@ -80,15 +90,51 @@ const db = {
   },
 
   async showEmployeeByManager() {
-    // Implement as needed
+    try {
+      const result = await pool.query(`
+        SELECT e1.first_name AS employee_first_name, e1.last_name AS employee_last_name, 
+               e2.first_name AS manager_first_name, e2.last_name AS manager_last_name
+        FROM employee e1
+        LEFT JOIN employee e2 ON e1.manager_id = e2.id
+        ORDER BY e2.last_name, e1.last_name;
+      `);
+      console.table(result.rows);
+      return result.rows;
+    } catch (error) {
+      console.error('Error fetching employees by manager:', error);
+    }
   },
 
   async showEmployeeByDept() {
-    // Implement as needed
+    try {
+      const result = await pool.query(`
+        SELECT e.first_name, e.last_name, d.name AS department
+        FROM employee e
+        JOIN role r ON e.role_id = r.id
+        JOIN department d ON r.department_id = d.id
+        ORDER BY d.name, e.last_name;
+      `);
+      console.table(result.rows);
+      return result.rows;
+    } catch (error) {
+      console.error('Error fetching employees by department:', error);
+    }
   },
 
   async showUtilizedBudgetByDept() {
-    // Implement as needed
+    try {
+      const result = await pool.query(`
+        SELECT d.name AS department, SUM(r.salary) AS total_budget
+        FROM role r
+        JOIN department d ON r.department_id = d.id
+        GROUP BY d.name
+        ORDER BY d.name;
+      `);
+      console.table(result.rows);
+      return result.rows;
+    } catch (error) {
+      console.error('Error calculating utilized budget by department:', error);
+    }
   },
 
   async getDept() {
@@ -117,16 +163,52 @@ const db = {
       console.error('Error fetching employees for manager selection:', error);
     }
   },
-  async removeRole(roleId) {
-    const query = `DELETE FROM role WHERE id = $1`; // SQL syntax uses $1 for parameterized queries in PostgreSQL
+
+  async collectNewEmployee() {
     try {
-      await pool.query(query, [roleId]); // Adjusted to use pool.query for consistency
+      const roles = await db.pickEmployeeRole(); // Ensure this function is defined and returns a list of roles
+      const employees = await db.getEmployee(); 
+      const newEmployee = await inquire.prompt([
+        {
+          type: 'input',
+          message: "Enter the first name of the new employee\n",
+          name: "firstName",
+          validate: checkInputText,
+        },
+        {
+          type: 'input',
+          message: "Enter the last name of the new employee\n",
+          name: "lastName",
+          validate: checkInputText,
+        },
+        {
+          type: 'list',
+          message: "Select the role of the new employee\n",
+          name: "role",
+          choices: roles,
+        },
+        {
+          type: 'list',
+          message: "Select the manager of the new employee\n",
+          name: "manager",
+          choices: employees,
+        },
+      ]);
+      return newEmployee;
+    } catch (error) {
+      console.error('Error collecting new employee data:', error);
+    }
+  },
+
+  async removeRole(roleId) {
+    try {
+      await pool.query('DELETE FROM role WHERE id = $1', [roleId]);
       console.log(`Role with ID ${roleId} has been removed.`);
     } catch (error) {
       console.error('Error deleting role:', error.message);
-      throw error; // Re-throw the error to be caught by the calling function
+      throw error;
     }
   }
-  };
+};
 
 module.exports = db;
