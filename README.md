@@ -79,7 +79,7 @@ Just follow the prompts in the command line. To quit select the "Quit" prompt.
 Below is a video of the terminal usage. 
 
   [Watch this video walk through](
- https://app.screencastify.com/v3/watch/d7JTOkMoamaIQj2xZCF5)
+ https://app.screencastify.com/v3/watch/Na0ULvcU4imnO6DvMqPa)
 
 ## Testing 
 
@@ -112,4 +112,4 @@ Test in PG admin or the terminal
  - [Github Repository](https://github.com/Reina2024/CLI-employee-Tracker)
 
 Video Link
--https://app.screencastify.com/v3/watch/d7JTOkMoamaIQj2xZCF5
+-https://app.screencastify.com/v3/watch/Na0ULvcU4imnO6DvMqPa
