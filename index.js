@@ -1,17 +1,16 @@
-const { prompt } = require("inquirer"); 
-const figlet = require("figlet");
-const db = require("./db"); 
-const validator = require("validator");
-
+const { prompt } = require("inquirer"); // Importing the prompt function from the inquirer package for interactive command line prompts
+const figlet = require("figlet"); // Importing figlet for generating ASCII art text
+const db = require("./db"); // Importing the database module for database operations
+const validator = require("validator"); // Importing validator for input validation
 
 // Initialize the application
 init();
 
 function init() {
-    // Print the welcome screen
+    // Print the welcome screen with ASCII art
     printWelcomeScreen();
   
-    // Load the main prompts
+    // Load the main prompts for user interaction
     loadMainPrompts();
 }
 
@@ -46,6 +45,7 @@ function printEndingScreen() {
 }
 
 async function loadMainPrompts() {
+    // Define the menu options for the user
     const menu = [
         "Departments",
         "Roles",
@@ -57,11 +57,12 @@ async function loadMainPrompts() {
         "View employees by manager",
         "View employees by department",
         "See Departmental Budget",
-        "REMOVE_ROLE", // Added option for removal
-        "Quit" // Added quit option
+        "REMOVE_ROLE", // Added option for role removal
+        "Quit" // Option to quit the application
     ];
 
     while (true) {
+        // Prompt the user with a list of menu options
         const { info } = await prompt([
             {
                 type: 'list',
@@ -71,49 +72,50 @@ async function loadMainPrompts() {
             },
         ]);
 
+        // Handle the user's choice
         switch (info) {
             case "Departments":
-                await db.showAllDepartments();
+                await db.showAllDepartments(); // Display all departments
                 break;
             case "Roles":
-                await db.showAllRoles();
+                await db.showAllRoles(); // Display all roles
                 break;
             case "List all employees":
-                await db.showAllEmployees();
+                await db.showAllEmployees(); // Display all employees
                 break;
             case "New department":
-                const newDept = await collectNewDept();
-                await db.addDept(newDept);
+                const newDept = await collectNewDept(); // Collect details for a new department
+                await db.addDept(newDept); // Add the new department to the database
                 break;
             case "New role":
-                const newRole = await collectNewRole();
-                await db.addRole(newRole);
+                const newRole = await collectNewRole(); // Collect details for a new role
+                await db.addRole(newRole); // Add the new role to the database
                 break;
             case "New employee":
-                const newEmployee = await collectNewEmployee();
-                await db.addEmployee(newEmployee);
+                const newEmployee = await collectNewEmployee(); // Collect details for a new employee
+                await db.addEmployee(newEmployee); // Add the new employee to the database
                 break;
             case "Update an employee's role":
-                const chosenOne = await pickEmployeeRole();
-                await db.updateEmployeeRole(chosenOne);
+                const chosenOne = await pickEmployeeRole(); // Select an employee to update their role
+                await db.updateEmployeeRole(chosenOne); // Update the employee's role in the database
                 break;
             case "View employees by manager":
-                await db.showEmployeeByManager();
+                await db.showEmployeeByManager(); // Display employees organized by manager
                 break;
             case "View employees by department":
-                await db.showEmployeeByDept();
+                await db.showEmployeeByDept(); // Display employees organized by department
                 break;
             case "See Departmental Budget":
-                await db.showUtilizedBudgetByDept();
+                await db.showUtilizedBudgetByDept(); // Display the budget utilized by each department
                 break;
             case "REMOVE_ROLE":
-                await removeRole(); // Ensure this function is defined
+                await removeRole(); // Remove a role from the database
                 break;
             case "Quit":
-                printEndingScreen();
+                printEndingScreen(); // Print the ending screen
                 process.exit(); // Exit the application
             default:
-                console.log("Invalid option selected.");
+                console.log("Invalid option selected."); // Handle invalid options
                 break;
         }
     }
@@ -121,74 +123,77 @@ async function loadMainPrompts() {
 
 // Function to collect details for a new department
 async function collectNewDept() {
+    // Prompt the user for the name of the new department
     const newDept = await prompt([
       {
         type: 'input',
         message: "Enter the name of the new department\n",
         name: "name",
-        validate: checkInputText 
+        validate: checkInputText // Validate the input
       }
     ]);
     return newDept;
 }
 
+// Function to remove a role from the database
 async function removeRole() {
-  const roles = await db.showAllRoles(); // Retrieve all roles
-  
-  const roleToRemove = await prompt([
-      {
-          type: 'list',
-          message: "Which role would you like to remove?\n",
-          name: "role",
-          choices: roles.map(role => ({ name: role.title, value: role.id })) // Pass role ID as the value
-      }
-  ]);
+    // Retrieve all roles from the database
+    const roles = await db.showAllRoles(); 
 
-  // Confirm removal
-  const confirmation = await prompt([
-      {
-          type: 'confirm',
-          message: `Are you sure you want to remove the role "${roleToRemove.role}"?`,
-          name: 'confirm',
-      }
-  ]);
+    // Prompt the user to select which role to remove
+    const roleToRemove = await prompt([
+        {
+            type: 'list',
+            message: "Which role would you like to remove?\n",
+            name: "role",
+            choices: roles.map(role => ({ name: role.title, value: role.id })) // Map roles to a list of choices
+        }
+    ]);
 
-  // If confirmed, remove the role
-  if (confirmation.confirm) {
-      try {
-          await db.removeRole(roleToRemove.role); // Call the removeRole method with the role ID
-          console.log(`Successfully removed the role.`);
-      } catch (err) {
-          console.error(`Error removing the role: ${err.message}`);
-      }
-  } else {
-      console.log("Role removal cancelled.");
-  }
+    // Confirm the role removal
+    const confirmation = await prompt([
+        {
+            type: 'confirm',
+            message: `Are you sure you want to remove the role "${roleToRemove.role}"?`,
+            name: 'confirm',
+        }
+    ]);
+
+    // If confirmed, remove the role from the database
+    if (confirmation.confirm) {
+        try {
+            await db.removeRole(roleToRemove.role); // Call the removeRole method with the selected role ID
+            console.log(`Successfully removed the role.`);
+        } catch (err) {
+            console.error(`Error removing the role: ${err.message}`); // Handle any errors
+        }
+    } else {
+        console.log("Role removal cancelled."); // Inform the user that the removal was cancelled
+    }
 }
 
+// Validation functions for user input
 
-// Validation
+// Validate input to ensure it is a number
 function checkInputNumber(str) {
     if (!validator.isEmpty(str.trim()) && validator.isNumeric(str.trim())) {
       return true;
     }
     return "Please Enter a Number";
-  }
-  
-  
-  function checkInputText(str) {
+}
+
+// Validate input to ensure it is a non-empty text with a maximum length of 25 characters
+function checkInputText(str) {
     if (!validator.isEmpty(str.trim()) && str.trim().length < 25) {
       return true;
     }
-    return "Please enter upto 25 Characters";
-  }
-  
-  
-  function checkInputName(str) {
+    return "Please enter up to 25 Characters";
+}
+
+// Validate input to ensure it contains a space (for names with first and last names)
+function checkInputName(str) {
     if (!validator.contains(str.trim(), [" "])) {
       return true;
     }
     return "Please enter a name";
-  }
-  
-  
+}
